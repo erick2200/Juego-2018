@@ -1,6 +1,12 @@
 #include "autoSprite.h"
 
-
+AutoSprite::AutoSprite::AutoSprite(){
+	imagen="";
+	posicion.x=0;
+    posicion.y=0;
+    dimensiones.x =0;
+    dimensiones.y =0;
+}
 AutoSprite::AutoSprite(std::string archivo){
     textura.loadFromFile(archivo);
     sprite.setTexture(textura);
@@ -18,7 +24,7 @@ void AutoSprite::ajustarPosicion(float x,float y){
 }
 
 void AutoSprite::escalar(float x,float y){
-	sprite.setScale(x/dimensiones.x,y/dimensiones.y);
+	sprite.setScale(x/textura.getSize().x,y/textura.getSize().y);
     dimensiones.x =x;
     dimensiones.y =y;
    
@@ -32,11 +38,11 @@ void AutoSprite::cambiarColor(int r,int g,int b,int a){
     sprite.setColor(color);
 }
 
-Sprite AutoSprite::getSprite(){
+sf::Sprite AutoSprite::getSprite(){
     return sprite;
 }
 
-Texture AutoSprite::getTexture(){
+sf::Texture AutoSprite::getTexture(){
     return textura;
 }
 
@@ -65,4 +71,5 @@ float AutoSprite::getTamanioX(){
 float AutoSprite::getTamanioY(){
     return dimensiones.y;
 }
+
 
