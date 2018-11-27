@@ -1,8 +1,7 @@
 #ifndef MOVIMIENTO_H
 #define MOVIMIENTO_H
-#include "autoSprite.h"
+#include "autosprite.h"
 #include<SFML/Audio.hpp>
-
 //------------------------------------------------------
 class Tiempo{
 	protected:
@@ -13,10 +12,11 @@ class Tiempo{
 		void setTime();
 		void esperarSeg(float tiemp);
 };
-
+//--------------------------------------------------
 class SpriteArray:public Tiempo{
-
 	protected:
+
+		int aux,velocidadMov;
 		int size;
 		void redimensionar(const int);
 		
@@ -39,13 +39,9 @@ class SpriteArray:public Tiempo{
 
 		int getSize() const ;
 };
-
-
-
 //--------------------------------------------------------------------------
 class Escena : public SpriteArray{
 	public:
-		int aux , velocidadMov;
 		Escena();
 		bool upcolision(AutoSprite,int);
 		bool downcolision(AutoSprite,int);
@@ -61,6 +57,7 @@ class EscenarioPrincipal : public Escena{
 		AutoSprite persona;
 		AutoSprite casaex;
 		AutoSprite tierra;
+		AutoSprite minijuegos;
 		bool checkTerreno(float,float);
 		public:
 			EscenarioPrincipal();

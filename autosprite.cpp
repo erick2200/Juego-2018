@@ -1,4 +1,4 @@
-#include "autoSprite.h"
+#include "autosprite.h"
 
 AutoSprite::AutoSprite::AutoSprite(){
 	imagen="";
