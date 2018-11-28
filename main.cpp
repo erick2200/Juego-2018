@@ -2,11 +2,6 @@
 #include <iostream>
 using namespace sf;
 using namespace std;
-//crea intervalo de tiempo de aprox 1 seg
-void wait(){
-	int i=clock()+150;
-	while(i>clock()){}
-}
 
 
 int main(){
@@ -42,11 +37,40 @@ int main(){
     AutoSprite seleccionar("img/SELECCIONAR.png");
     seleccionar.ajustarPosicion(250,200);
     seleccionar.escalar(200,60);
+
     Menu menuprincipal(2,1);
     menuprincipal.addSprite(fondo);	
     menuprincipal.addSprite(menujugar);    
     menuprincipal.addSprite(menusalir);
-	menuprincipal.addSprite(seleccionar);    
+	menuprincipal.addSprite(seleccionar);
+
+	Menu juegosmini(2,2);
+	AutoSprite fondomini("img/fondojuego.png");
+	AutoSprite seleccionador("img/selecjuego.png");
+	AutoSprite figcarrera("img/figcarrera.jpg");
+	AutoSprite memoria("img/memoria.jpg");
+	AutoSprite comida("img/figcomida.jpg");
+	AutoSprite salir("img/salir.jpg");
+	juegosmini.setTam(2,2);
+	fondomini.escalar(800,600);
+	seleccionador.escalar(325,225);
+	seleccionador.ajustarPosicion(50,50);
+	figcarrera.escalar(325,225);
+	figcarrera.ajustarPosicion(50,50);
+	memoria.escalar(325,225);
+	memoria.ajustarPosicion(425,50);
+	comida.escalar(325,225);
+	comida.ajustarPosicion(50,325);
+	salir.escalar(325,225);
+	salir.ajustarPosicion(425,325);
+	juegosmini.addSprite(fondomini);
+	juegosmini.addSprite(figcarrera);
+	juegosmini.addSprite(memoria);
+	juegosmini.addSprite(comida);
+	juegosmini.addSprite(salir);
+	juegosmini.addSprite(seleccionador);
+
+    
 	
 	//INVENTARIO
 	Inventario inventario(4,4);
@@ -58,20 +82,11 @@ int main(){
 	//Tiempo
 	Tiempo tiempo;
 
+	//
+	//Minijuegos mini;
+
 	//Carrera de cuys
-	Escena carrera;
-	AutoSprite fondoCarrera("img/fondoCarrera.jpg");
-	fondoCarrera.ajustarPosicion(0,0);
-	fondoCarrera.escalar(800,600);
-	AutoSprite cuy("img/0ucuy.jpg");
-	cuy.escalar(110,65);
-	cuy.ajustarPosicion(100,100);
-	AutoSprite tronco("img/tronco.png");
-	tronco.escalar(90,300);
-	tronco.ajustarPosicion(300,200);
-	carrera.addSprite(fondoCarrera);
-	carrera.addSprite(tronco);
-	carrera.addSprite(cuy);
+	Carrera carrera;
 	
     int escenario=0;
     int escenariotemp=escenario;
@@ -86,6 +101,7 @@ int main(){
     	}
     	tiempo.setTime();
     	cout<<tiempo.getTime()<<endl;
+
     	// 0)menuprincipal  1)escenario1  2)casa  3)inventario  4)tienda
     	switch(escenario){
     		case(0):{ //menuprincipal
@@ -110,7 +126,7 @@ int main(){
 					escenario=2;
 				}
 				if(escenario1.checkPosition(950,1050,1000,1200)&&Keyboard::isKeyPressed(Keyboard::X))
-					escenario=5;
+					escenario=6;
 					
 				inventario.mostrarinventario(escenario,escenariotemp);
 				if(Keyboard::isKeyPressed(Keyboard::T))
@@ -161,16 +177,28 @@ int main(){
 				if(Keyboard::isKeyPressed(Keyboard::C))
 					escenario=1;
 				break;
-
+			}
 			case(5):{
-				carrera.mover(2,3,3);
+				carrera.movercuy(3,3);
+				carrera.moverAguila(1);
         		carrera.mostrar(juego);
-				carrera.setview(juego,2);
+				carrera.setviewcuy(juego);
 				if(Keyboard::isKeyPressed(Keyboard::Escape))
-					escenario = 1 ;
+					escenario = 6 ;
 				break;
 			}
-			}
+			case(6):{ //menuprincipal
+				juego.setView(view);
+    			juegosmini.mover(1,375,275);
+    			juegosmini.mostrar(juego);
+    			if(juegosmini.escena[5].getPosicionX()==50&&juegosmini.escena[5].getPosicionY()==50&&Keyboard::isKeyPressed(Keyboard::Return))
+    				escenario=5;
+    			if(juegosmini.escena[5].getPosicionX()==425&&juegosmini.escena[5].getPosicionY()==325&&Keyboard::isKeyPressed(Keyboard::Return))
+    				escenario=1;
+				break;
+				}
+
+			
 		}
 		
 	}

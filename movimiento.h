@@ -3,11 +3,13 @@
 #include "autosprite.h"
 #include<SFML/Audio.hpp>
 //------------------------------------------------------
+
 class Tiempo{
 	protected:
 		Time *tiempo;
 	public:
 		Tiempo();
+		~Tiempo();
 		float getTime();
 		void setTime();
 		void esperarSeg(float tiemp);
@@ -50,6 +52,22 @@ class Escena : public SpriteArray{
 		void moverentidad(int,int);
 		void mover(int,int,int);
 };
+
+class Carrera : public 	Escena {
+	private:
+		AutoSprite fondo;
+		AutoSprite cuy;
+		AutoSprite aguila;
+		AutoSprite tronco;
+	public:
+		Carrera();
+		void moverAguila(int); //velocidad
+		void movercuy(int,int);
+		void setviewcuy(RenderWindow &);
+		
+};
+
+
 //---------------------------------------------------------------------------
 class EscenarioPrincipal : public Escena{
 	private:
@@ -59,10 +77,10 @@ class EscenarioPrincipal : public Escena{
 		AutoSprite tierra;
 		AutoSprite minijuegos;
 		bool checkTerreno(float,float);
-		public:
-			EscenarioPrincipal();
-			void changeTerreno(std::string);
-			void nextDay();
+	public:
+		EscenarioPrincipal();
+		void changeTerreno(std::string);
+		void nextDay();
 			
 };
 
@@ -71,8 +89,10 @@ class Menu : public SpriteArray{
 	protected:
 		int filas,columnas;
 	public:
+		Menu();
 		Menu(int,int);
 		virtual void mover(int,int,int);
+		void setTam(int,int);
 };
 
 
@@ -110,5 +130,16 @@ class Tienda : public Menu{
 		AutoSprite comprar();
 };
 
+
+
+
+/*
+class Comer : public Minijuegos{
+	public:
+		Comer();
+		void mover(int,int,int);
+};
+*/
+//---------------------------------
 
 #endif

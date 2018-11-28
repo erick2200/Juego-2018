@@ -1,9 +1,10 @@
 #include "movimiento.h"
-#include<SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 
 #include <iostream>
 
 Clock reloj;
+
 //----------------------------------------------------------------CLASS SPRITEARRAY
 //constructor defecto
 SpriteArray::SpriteArray(){
@@ -243,10 +244,8 @@ void Escena::moverentidad(int numero,int velocidad){
 		x+=velocidad;	
 		escena[numero].ajustarPosicion(x,y);
 	}
-
-  
-
 }
+
 //----------------------------------------------------CLASS ESCENARIOPRINCIPAL
 
 //constructor
@@ -278,7 +277,7 @@ EscenarioPrincipal::EscenarioPrincipal() : Escena(){
 //interaccion del terreno
 void EscenarioPrincipal::changeTerreno(std::string img){
 	std::string posimg;
-	int pos=0;
+	int pos=1;
 	for(int i=0;i<6;i++){
 		for(int j=0;j<6;j++){
 			pos++;
@@ -332,14 +331,71 @@ void EscenarioPrincipal::nextDay(){
 		}
 	}
 }
+
+// clase Carrera ------------------
+Carrera::Carrera(){
+	fondo.setImagen("img/fondocarrera.jpg");
+	tronco.setImagen("img/tronco.png");
+	aguila.setImagen("img/aguila.jpg");
+	cuy.setImagen("img/cuy.jpg");
+	fondo.escalar(2000,480);
+	tronco.escalar(60,100);
+	tronco.ajustarPosicion(400,380);
+	aguila.escalar(250,150);
+	aguila.ajustarPosicion(400,300);
+	cuy.escalar(110,65);
+	cuy.ajustarPosicion(0,415);
+	addSprite(fondo);
+	addSprite(tronco);
+	addSprite(aguila);
+	addSprite(cuy);
+}
+
+void Carrera::moverAguila(int velocidad){
+	int y = escena[2].getPosicionY();
+	int x = escena[2].getPosicionX()-velocidad;
+	escena[2].ajustarPosicion(x,y);	
+}
+
+void Carrera::setviewcuy(sf::RenderWindow&a){
+	sf::View view(sf::Vector2f(150.f,480.f), sf::Vector2f(640.f,480.f));
+	view.setCenter(sf::Vector2f(escena[3].getPosicionX()+200,240));
+	a.setView(view);
+}
+
+void Carrera::movercuy(int numero,int velocidady){
+	int x=escena[3].getPosicionX()+numero;
+	int y=escena[3].getPosicionY();
+	if(rightcolision(escena[3],1))
+	escena[3].ajustarPosicion(x,y);
+	if(escena[3].getPosicionX()>=1600)
+		escena[3].ajustarPosicion(300,y);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+		y-=velocidady;
+		escena[3].ajustarPosicion(x,y);	
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+		y+=velocidady;	
+		escena[3].ajustarPosicion(x,y);	
+	}	
+}
+
+
 //------------------------------------------------------CLASS MENU
 
 //constructor
+Menu::Menu(){
+	filas=0;
+	columnas=0;
+}
 Menu::Menu(int filas,int columnas){
+	setTam(filas,columnas);
+}
+void Menu::setTam(int filas,int columnas){
 	this->filas=filas;
 	this->columnas=columnas;
 }
-
 //mover menu
 void Menu::mover(int primeraposicion/*(1)*/,int velocidadx,int velocidady){
 	int x=escena[size-1].getPosicionX();
@@ -373,6 +429,10 @@ void Menu::mover(int primeraposicion/*(1)*/,int velocidadx,int velocidady){
 Tiempo::Tiempo(){
 	tiempo = new Time;
 	*tiempo = reloj.getElapsedTime();
+}
+
+Tiempo::~Tiempo(){
+	delete tiempo;
 }
 
 float Tiempo::getTime(){ // todo esto para que salga 1.1 osea un decimal :v
@@ -525,4 +585,5 @@ AutoSprite Tienda::comprar(){
 	if(escena[size-1].getPosicionX()==escena[i].getPosicionX())
 		return escena[i];
 }
+
 
