@@ -1,0 +1,311 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{anysize}
+\marginsize{3cm}{3cm}{1cm}{0.2cm}
+
+\title{   Ciencias de la computacion Informe sobre el video juego}
+\author{Leonardo Vañdivia Ramos,
+Erick Gutierrez Enriquez}
+
+\date{December 2018}
+
+
+\usepackage{color}
+\usepackage{listings}
+\lstset{
+  language=c++,
+  basicstyle=\footnotesize,
+  numbers = left,
+  numberstyle= \footnotesize,
+  stepnumber = 1,
+  numbersep = 5pt,
+  backgroundcolor=\color{white},
+  showspaces = false,
+  showstringspaces=false,
+  showstabs=false,
+  frame = single,
+  tabsize = 2,
+  captionpos = b,
+  breaklines=true,
+  breakatwhitespace=false,
+  escapeinside = {\%*}{*)}
+}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{lstlisting}
+
+#include "SFML/Graphics.hpp"
+
+using namespace sf;
+
+class AutoSprite{
+
+private:
+
+    Texture textura;
+    Sprite sprite;
+    
+    std::string imagen;
+    Color color;
+	Vector2f posicion;
+    Vector2f dimensiones;
+    
+public:
+	AutoSprite();
+	//inicializa un autosprite con valores en 0 y sin imagen
+    AutoSprite(std::string);
+    //recibe el nombre de la imagen y establece los datos miembros
+    void ajustarPosicion(float,float);
+    //ajusta la poscicion del sprite segun las nuevas posiciones
+    void escalar(float,float);
+    // escala el autosprite con los tamanos asignados
+    void cambiarColor(int,int,int,int);
+    // cambia de color al sprite
+	void setImagen(std::string);
+	// otorga una imagen para el sprite con un string que es su nombre
+	void pseudoDimensiones(float,float);
+	//cambia las dimensiones de a clase sin cambiar el sprite
+	
+    Texture getTexture();
+    //retorna la textura
+    Sprite getSprite();
+    //retorna el sprite
+    std::string getImagen();
+    // retorna el nombre de la imagen
+    float getTamanio(char);
+    // retorna las dimensiones segun sea X o Y
+    float getPosicion(char);
+    // retorna la posicion segun sea X o Y
+} ;
+
+\end{lstlisting}
+\begin{lstlisting}
+//clase que fue creada para poder crear intervalos de tiempo de espera para la interaccion del usuario
+class Tiempo{
+	protected:
+		Time *tiempo;
+	public:
+		Tiempo();
+		~Tiempo();
+		float getTime();
+		void setTime();
+		void esperarSeg(float tiemp);
+};
+
+\end{lstlisting}
+\begin{lstlisting}
+//clase que contiene arreglos de autosprites
+class SpriteArray:public Tiempo{
+	protected:
+		int aux,velocidadMov;
+		int size;
+		void redimensionar(const int);
+		
+	public:
+		AutoSprite *escena;
+		
+		//constructores
+		SpriteArray();
+		SpriteArray(const SpriteArray&);
+		~SpriteArray();
+	
+		
+		void addSprite(AutoSprite);
+		void posicionarSprite(const AutoSprite,const int);
+		void removeSprite(const int);
+		virtual void mostrar(sf::RenderWindow &);
+		void setview(sf::RenderWindow&,int);
+		virtual void mover(int,int)=0;
+		bool checkPosition(int,int,int,int);
+
+		int getSize() const ;
+};
+
+\end{lstlisting}
+\begin{lstlisting}
+//clase que contiene las colisiones y movimiento del personaje
+class Escena : public SpriteArray{
+	public:
+		Escena();
+		bool basecolision1(AutoSprite,int,char);
+		bool basecolision2(AutoSprite,int,char);
+		bool rightcolision(AutoSprite,int);
+		bool leftcolision(AutoSprite,int);
+		bool upcolision(AutoSprite,int);
+		bool downcolision(AutoSprite,int);
+		void mover(int,int);
+};
+\end{lstlisting}
+\begin{lstlisting}
+//Clase dericada para realizar el movimiento de un venado (moviimiento diferente al habitual)
+class Carrera : public 	Escena {
+	private:
+		sf::Font fuente;
+		sf::Text texto;
+		int puntuacion;
+		AutoSprite fondo;
+		AutoSprite cuy;
+		AutoSprite tronco;
+		int record;
+	public:
+		Carrera();
+		void movercuy(float&,int,RenderWindow &);//para mover al venado
+		void setviewcuy(RenderWindow &); // la pantalla seguira al venado
+		void setRecord(int);//obtendra el puntaje al cual llego
+		int getRecord(); // recargara el puntaje
+		
+};
+
+
+\end{lstlisting}
+\begin{lstlisting}
+
+//clase para recrear un movimiento que se asemeje a un menu
+class Menu : public SpriteArray{
+	protected:
+		int filas,columnas;
+	public:
+	    //constructor sin argumentos supone un menu de 0x0
+		Menu();
+		//constructor que recibe el tamaño del menu
+		Menu(int,int);
+		//mueve el seleccionador con los limites establecidos en filas y columnas
+		virtual void mover(int,int);
+		//establece las filas y columnas
+		void setTam(int,int);
+};
+
+\end{lstlisting}
+\begin{lstlisting}
+//clase derivada de menu con funciones adicionales
+//esta clase crea una matriz dinamica para almacenar la posicion actual del seleccionador
+class Inventario : public Menu{
+	private:
+		sf::Font fuente;
+		sf::Text texto;
+		AutoSprite fondo;
+		AutoSprite select;
+		AutoSprite hacha;
+		AutoSprite pala;
+		AutoSprite combo;
+		AutoSprite regadera;
+		AutoSprite vacio;
+		int dinero;
+		std::string **matriz;
+		int factual,cactual;
+		
+
+	public:
+		Inventario(int,int);
+		~Inventario();
+	
+	    //muestra el inventario con el dinero actual
+		void mostrar(sf::RenderWindow&);
+		//se encarga de almacenar los valores de los escenarios para poder regresar al escenario anterior
+		void mostrarinventario(int&,int&);
+		//mueve al sprite y cambia los valores de la fila actual de la matriz y la columna
+		void mover(int,int);
+		//cambia el contenido de un autosprite en la escena y le pasa la imagen a la matriz
+		void addItem(AutoSprite autosprite);
+		//quita un autosprite y resetea su nombre en la matriz
+		void removecurrentItem();
+		//cambia la cantidad del dinero
+		void setDinero(int);
+		//verifica si el autosprite seleccionado es un producto que se vende si es asi aumenta el dinero y lo resetea
+		void sell();
+		
+		//retorna la cantidad de dinero
+		int getDinero();
+		
+		//retorna la string de la imagen que esta seleccionada
+		std::string getselect() const ;
+};
+\end{lstlisting}
+\begin{lstlisting}
+//clase deribada de escena con funciones adicionales para interactuar con el inventario
+class EscenarioPrincipal : public Escena{
+	private:
+		AutoSprite ppapa;
+		AutoSprite pmaiz;
+		AutoSprite ptomate;	
+		AutoSprite fondo;
+		AutoSprite persona;
+		AutoSprite casaex;
+		AutoSprite tierra;
+		AutoSprite minijuegos;
+		
+		//revisa si el personaje se encuentra en una poscicion para interactuar con el terreno
+		bool checkTerreno(float,float);
+	public:
+	    //carga los autosprites
+		EscenarioPrincipal();
+		//usa checkterreno para verificar tu interaccion y segun el inventario y la condicion del terreno cambia el terreno
+		void changeTerreno(Inventario*);
+		//cuando hace la acccion de dormir revisa es estado actual del terreno y segun eso lo cambia
+		void nextDay();
+			
+};
+
+\end{lstlisting}
+\begin{lstlisting}
+//----------------------------------------------------------------------
+class Tienda : public Menu{
+	private:
+		AutoSprite fondo;
+		AutoSprite select;
+		AutoSprite tomate;
+		AutoSprite maiz;
+		AutoSprite papa;
+	public:
+		Tienda(int,int);
+		//retorna el autosprite seleccionado
+		AutoSprite comprar(Inventario*);
+};
+\end{lstlisting}
+
+
+\begin{lstlisting}
+
+class Comer : public Escena {
+	private:
+		sf::Font fuente;
+		sf::Text texto;
+		AutoSprite fondo;
+		AutoSprite cerdo;
+		AutoSprite comida;
+		AutoSprite nocomida;
+		int puntuacion,vidas,record;
+	public:
+		Comer();
+		bool comerObjeto(int objeto);
+		//verifica si se comio un objeto i
+		void comerBasura();
+		//comio algo que no deberia
+		void moverCerdo(int,RenderWindow &);
+		//movimiento especial diferente a los demas
+		void caerComida(int);
+		//hara caer la comida--recibe un entero aleatotio
+		void caerBasura(int);
+		//hara caer lo que no es comida -- recibe un x aleatorio
+		void salir(RenderWindow &);
+		//vuelve todoal inciio a la hora de perder o de salir
+		void mostrarc(sf::RenderWindow &);
+	    //sirve para mostrar con mas facildad
+
+		void setRecord(int) ; // se insertara un record
+		int getRecord(); // devuelve el record
+		
+};
+//---------------------------------
+
+#endif
+\end{lstlisting}
+
+\end{document}
